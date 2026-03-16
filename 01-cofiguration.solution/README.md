@@ -141,15 +141,3 @@ This is the most capable configuration in the sequence.
 	- `num_master_ports=4`
 	- `num_channels_per_master_port=1`
 
-Interpretation: this final step demonstrates system-level scaling for data movement. With more DMA resources, the architecture can sustain more concurrent memory transactions.
-
-## Why This Progression Is Pedagogically Useful
-
-The sequence `00 -> 01 -> 02 -> 03` introduces one major concept at a time:
-
-1. Build a correct minimal system.
-2. Expand interconnect, memory, and peripherals.
-3. Upgrade the compute core.
-4. Upgrade data-movement parallelism.
-
-This staged approach helps students debug incrementally and understand which subsystem is responsible for each observed change in the generated design.
