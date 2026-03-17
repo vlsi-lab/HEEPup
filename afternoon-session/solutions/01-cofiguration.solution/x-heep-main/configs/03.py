@@ -43,11 +43,11 @@ from x_heep_gen.peripherals.user_peripherals import (
 
 def config():
     system = XHeep(BusType.NtoM)
-    system.set_cpu(cv32e40p(fpu=True, corev_pulp=True))
+    system.set_cpu(cv32e40p(corev_pulp=True))
 
     memory_ss = MemorySS()
-    memory_ss.add_ram_banks([32] * 8)
-    memory_ss.add_ram_banks_il(4, 16, "data_interleaved")
+    memory_ss.add_ram_banks([32] * 2)
+    memory_ss.add_ram_banks_il(8, 32, "data_interleaved")
     memory_ss.add_linker_section(LinkerSection.by_size("code", 0, 0x00000E800))
     memory_ss.add_linker_section(LinkerSection("data", 0x00000E800, None))
     system.set_memory_ss(memory_ss)
@@ -66,8 +66,8 @@ def config():
         DMA(
             address=0x30000,
             length=0x10000,
-            num_channels=4,
-            num_master_ports=4,
+            num_channels=1,
+            num_master_ports=1,
             num_channels_per_master_port=1,
         )
     )

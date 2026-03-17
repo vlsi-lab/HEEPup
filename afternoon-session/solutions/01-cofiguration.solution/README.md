@@ -1,143 +1,117 @@
-# Configuration Exercise - Solution Guide
+## Configuration Exercise
 
-This document explains the intended behavior of the four Python configuration files in `x-heep-main/configs`:
+In this activity, you will design and compare eight X-HEEP configurations, then measure their impact on execution cycles.
+
+Your implementation targets are the following Python files in `x-heep-main/configs`:
 
 - `00.py`
 - `01.py`
 - `02.py`
 - `03.py`
+- `04.py`
+- `05.py`
+- `06.py`
+- `07.py`
 
-The goal of the exercise is not only to reproduce the code, but also to understand why each system change matters.
+Use `configs/general.py` as your structural reference.
 
-## How to Regenerate and Inspect
+## Exercise Goal
 
-Run the generator with the selected Python configuration:
+In this exercise, you will explore how different architectural choices in the X-HEEP platform affect the performance of a simple matrix multiplication workload (`example_matmul`). By implementing and comparing eight distinct configurations, you will gain insights into the trade-offs between CPU microarchitecture, bus topology, memory subsystem design, and data movement capabilities.
+
+- CPU microarchitecture changes (`CV32E20`, `CV32E40P`, `CV32E40P with PULP extensions`)
+- Bus topology changes (`ONE2M` vs `N2M`)
+- Memory subsystem changes (`NORMAL` contiguous vs `INTL` interleaved)
+- Data movement and concurrency changes (number of DMA channels and DMA master ports) (use `example_dma` for testing)
+
+Across all eight configurations, memory is fixed to 10 banks of 32 KB each (320 KB total).
+
+At the end, you should be able to explain not only what each config contains, but also why some configs complete `example_matmul` in fewer cycles.
+
+## Build and Generate
+
+Generate with:
 
 ```sh
-make mcu-gen PYTHON_X_HEEP_CONFIG=configs/00.py X_HEEP_CFG=configs/python_unsupported.hjson
+make mcu-gen PYTHON_X_HEEP_CFG=configs/00.py X_HEEP_CFG=configs/python_unsupported.hjson
 ```
 
-Then repeat with `01.py`, `02.py`, and `03.py`, and compare the generated hardware/software artifacts in `x-heep-main`.
+Then repeat for `configs/01.py` through `configs/07.py`.
 
-## Architectural Concepts Used in This Exercise
+After each generation, inspect the produced output in `x-heep-main` and verify that the expected architecture choices were applied.
 
-### Bus topology: one-to-many vs N-to-M
+To use the pulp extensions, compile with:
 
-In this exercise, the bus topology is one of the key design knobs:
+```sh
+make app PROJECT=example_matmul ARCH=32imc_zicsr_zifencei_xcvhwlp_xcvmem_xcvmac_xcvbi_xcvalu_xcvsimd_xcvbitmanip
+```
 
-- `BusType.onetoM` (one-to-many):
-	- Conceptually, one main initiator path fans out to multiple targets.
-	- This is simpler and useful for minimal systems.
-	- It is easier to reason about and usually enough for introductory configurations.
+## Functional Validation
 
-- `BusType.NtoM` (N-to-M):
-	- Multiple initiators can access multiple targets through a more flexible interconnect.
-	- This scales better as the SoC grows (more memories, DMA activity, more peripherals).
-	- It is better suited for richer systems where parallel accesses are expected.
+For every configuration:
 
-So, moving from `onetoM` to `NtoM` reflects a transition from a basic setup to a more scalable and concurrent architecture.
+1. Run Verilator simulation of `hello_world` to ensure the platform boots correctly.
+2. Run Verilator simulation of `example_matmul` for a comparable workload.
+3. Modify `example_matmul` to print cycle count so results are directly comparable across all 8 configurations.
 
-### Memory organization
+## Report Template
 
-You will see two styles of memory growth:
+Fill this table after collecting the cycle counts:
 
-- Standard RAM banks (`add_ram_banks`): straightforward capacity increase.
-- Interleaved banks (`add_ram_banks_il`): memory is split across banks in a way that can improve throughput when accesses are distributed.
+| Config | Cycles |
+|--------|--------|
+| 00.py  |        |
+| 01.py  |        |
+| 02.py  |        |
+| 03.py  |        |
+| 04.py  |        |
+| 05.py  |        |
+| 06.py  |        |
+| 07.py  |        |
 
-The linker sections remain structured as:
+## Configuration Targets
 
-- `code` at the beginning of memory, with a fixed size.
-- `data` starting right after `code`, occupying the remaining space.
+### `00.py`
 
-This keeps software memory layout stable while hardware resources scale.
+It uses `CV32E20`, `ONE2M` bus, the `NORMAL` memory subsystem (contiguous), and 1 DMA channel, with 10 banks of 32 KB each.
 
-### CPU choices
+### `01.py`
 
-Two RISC-V cores are used across the exercise:
+Here you move to `CV32E40P` and also change interconnect and memory subsystem (`N2M` + `INTL`), while keeping 1 DMA channel. Memory is interleaved, still with 10 banks of 32 KB each.
 
-- `cv32e20`: compact and suitable for baseline systems.
-- `cv32e40p`: higher-performance option; here configured with:
-	- `fpu=True` (floating-point support)
-	- `corev_pulp=True` (CORE-V PULP extensions)
+### `02.py`
 
-Switching from `cv32e20` to `cv32e40p` demonstrates how the same platform can be retargeted to a more capable compute core.
+You keep `CV32E40P`, but return to `ONE2M` and `NORMAL`, still with 1 DMA channel. Memory remains fixed at 10 banks of 32 KB in contiguous mode.
 
-### DMA scaling
+### `03.py`
 
-DMA parameters illustrate system-level parallelism:
+This configuration uses the `CV32E40P` core with PULP extensions enabled while keeping `N2M`, `INTL`, and 1 DMA channel. Memory is again interleaved with 10 x 32 KB banks.
 
-- Small setup: 1 channel, 1 master port.
-- Scaled setup: 4 channels, 4 master ports.
+### `04.py`
 
-More channels and ports allow more concurrent transfers, which becomes relevant in systems with higher memory bandwidth demand.
+You switch back to `CV32E20`, keep `N2M` + `INTL`, and increase to 2 DMA channels. Memory is interleaved (10 banks, 32 KB each).
 
-## Detailed Description of Each Configuration
+### `05.py`
 
-### `00.py`: Minimal baseline platform
+This setup uses `CV32E20`, `ONE2M`, `NORMAL`, 2 DMA channels, and 1 DMA master port. Memory stays at 10 contiguous 32 KB banks.
 
-This is the starting point and the simplest complete system.
+### `06.py`
 
-- Bus: `BusType.onetoM`.
-- CPU: `cv32e20(rv32e=False, rv32m="RV32MSlow")`.
-- Memory:
-	- 2 RAM banks of 32 KiB.
-	- Linker `code` section from address `0` with size `0x00000E800`.
-	- Linker `data` section starting at `0x00000E800`.
-- Peripherals:
-	- All mandatory base peripherals are present.
-	- No optional user peripherals are enabled.
-- DMA:
-	- `num_channels=1`
-	- `num_master_ports=1`
-	- `num_channels_per_master_port=1`
+This configuration combines `CV32E40P`, `ONE2M`, `NORMAL`, 2 DMA channels, and 2 DMA master ports. Memory stays at 10 contiguous 32 KB banks.
 
-Interpretation: this is a clean baseline used to validate that the minimal architecture works correctly before adding complexity.
+### `07.py` - Full-feature high-end setup
 
-### `01.py`: Memory and peripheral expansion
+This is the richest configuration in the set: `CV32E40P XPULP` (PULP extensions enabled), `N2M`, `INTL`, 2 DMA channels, and 2 DMA master ports. Memory is interleaved with 10 banks of 32 KB.
 
-This configuration extends `00.py` into a richer MCU system.
+## Suggested Implementation Order
 
-- Bus: changed to `BusType.NtoM` for better scalability.
-- CPU: still `cv32e20(rv32e=False, rv32m="RV32MSlow")`.
-- Memory:
-	- 8 RAM banks of 32 KiB.
-	- 4 interleaved RAM banks of 16 KiB, labeled `"data_interleaved"`.
-	- Same linker section strategy as in `00.py`.
-- User peripherals added:
-	- `RV_plic(0x00000000)`
-	- `SPI_host(0x00010000)`
-	- `GPIO(0x00020000)`
-	- `I2C(0x00030000)`
-	- `RV_timer(0x00040000)`
-	- `SPI2(0x00050000)`
-	- `I2S(0x00070000)`
-	- `UART(0x00080000)`
-- DMA unchanged (still 1 channel, 1 master port).
+Use this progression to reduce debugging time and keep diffs understandable:
 
-Interpretation: the platform now supports a broader embedded use case with more memory and common I/O peripherals, while keeping compute and DMA complexity moderate.
-
-### `02.py`: Compute capability upgrade
-
-This configuration keeps the SoC structure from `01.py`, but upgrades the CPU.
-
-- Bus: `BusType.NtoM`.
-- CPU: `cv32e40p(fpu=True, corev_pulp=True)`.
-- Memory: same as `01.py`.
-- Peripherals: same as `01.py`.
-- DMA: same as `01.py` (1 channel, 1 master port).
-
-Interpretation: this isolates the effect of the processor change. Students can see how moving to a more capable core does not require redesigning the rest of the platform.
-
-### `03.py`: DMA parallelism upgrade
-
-This is the most capable configuration in the sequence.
-
-- Bus: same as `02.py` (`BusType.NtoM`).
-- CPU: same as `02.py` (`cv32e40p` with FPU and PULP).
-- Memory: same as `02.py`.
-- Peripherals: same as `02.py`.
-- DMA upgraded to:
-	- `num_channels=4`
-	- `num_master_ports=4`
-	- `num_channels_per_master_port=1`
-
+1. Implement `00.py` first as your known-good baseline.
+2. Continue with `01.py`.
+3. Then `02.py`.
+4. Then `03.py`.
+5. Then `04.py`.
+6. Then `05.py`.
+7. Then `06.py`.
+8. Finally `07.py`.

@@ -42,12 +42,11 @@ from x_heep_gen.peripherals.user_peripherals import (
 
 
 def config():
-    system = XHeep(BusType.NtoM)
-    system.set_cpu(cv32e40p(fpu=True, corev_pulp=True))
+    system = XHeep(BusType.onetoM)
+    system.set_cpu(cv32e40p())
 
     memory_ss = MemorySS()
-    memory_ss.add_ram_banks([32] * 8)
-    memory_ss.add_ram_banks_il(4, 16, "data_interleaved")
+    memory_ss.add_ram_banks([32] * 10)
     memory_ss.add_linker_section(LinkerSection.by_size("code", 0, 0x00000E800))
     memory_ss.add_linker_section(LinkerSection("data", 0x00000E800, None))
     system.set_memory_ss(memory_ss)
