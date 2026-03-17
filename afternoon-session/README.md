@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="img/heep-up.png" alt="HEEPup" width="600"/>
+  <img src="../img/heep-up.png" alt="HEEPup" width="600"/>
 </p>
 
 # HEEPup Afternoon Session
