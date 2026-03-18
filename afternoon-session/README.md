@@ -15,6 +15,9 @@ This setup installs and configures:
 3. RISC-V toolchain for X-HEEP
 4. Verilator `v5.040`
 5. Conda environment from `conda_environment.yml`
+6. openOCD
+7. openFPGAloader
+8. picocom
 
 ## Supported platforms
 
@@ -208,6 +211,38 @@ Add the toolchain to your shell if needed:
 ```bash
 export RISCV_XHEEP="$(realpath tools/risc-v)"
 ```
+
+### Step 6/5 - openOCD
+
+Install commands (manual):
+
+```bash
+# macOS
+brew install openocd
+# Linux
+sudo apt-get install -y openocd
+```
+
+### Step 7/5 - openFPGAloader
+Install commands (manual):
+
+```bash
+# macOS
+brew install openfpgaloader
+# Linux
+sudo apt-get install -y openfpgaloader
+```
+
+### Step 8/5 - picocom
+Install commands (manual):
+
+```bash
+# macOS
+brew install picocom
+# Linux
+sudo apt-get install -y picocom
+```
+
 
 ## Notes and troubleshooting
 

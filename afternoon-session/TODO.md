@@ -1,1 +1,0 @@
-Add to the main readme reference to openFPGAloader
