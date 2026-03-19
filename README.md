@@ -7,6 +7,8 @@
 A hands-on workshop on [X-HEEP](https://github.com/esl-epfl/x-heep), the eXtendable Heterogeneous Energy-Efficient Platform, jointly organized by **EPFL**, **UPM**, and **POLITO**.
 
 **Date:** March 20, 2025
+**Where:** Maxwell Conference room (DET, PoliTO)
+**Online:** https://didattica.polito.it/VClass/HEEPUP
 
 ## Agenda
 
