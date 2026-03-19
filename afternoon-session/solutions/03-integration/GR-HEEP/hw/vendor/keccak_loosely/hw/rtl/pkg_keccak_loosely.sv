@@ -1,14 +1,14 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 // Authors:      Alessandra Dolmeta - alessandra.dolmeta@polito.it                      //
 //               Valeria Piscopo    - valeria.piscopo@polito.it                         //
-// Design Name:  pkg_keccak                                                             //
+// Design Name:  pkg_keccak_loosely                                                             //
 // Language:     SystemVerilog                                                          //
 // Based on the designed of Michal Peeters and Gilles Van Assche.                       //
 //                                                                                      //
 //////////////////////////////////////////////////////////////////////////////////////////
 
 
-package pkg_keccak;
+package pkg_keccak_loosely;
 
 
     localparam int NUM_PLANE             = 5;

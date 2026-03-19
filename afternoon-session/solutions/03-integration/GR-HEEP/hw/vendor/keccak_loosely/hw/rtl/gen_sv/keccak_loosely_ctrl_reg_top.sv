@@ -7,7 +7,7 @@
 
 `include "common_cells/assertions.svh"
 
-module keccak_ctrl_reg_top #(
+module keccak_loosely_ctrl_reg_top #(
   parameter type reg_req_t = logic,
   parameter type reg_rsp_t = logic,
   parameter int AW = 3
@@ -17,15 +17,15 @@ module keccak_ctrl_reg_top #(
   input  reg_req_t reg_req_i,
   output reg_rsp_t reg_rsp_o,
   // To HW
-  output keccak_ctrl_reg_pkg::keccak_ctrl_reg2hw_t reg2hw, // Write
-  input  keccak_ctrl_reg_pkg::keccak_ctrl_hw2reg_t hw2reg, // Read
+  output keccak_loosely_ctrl_reg_pkg::keccak_loosely_ctrl_reg2hw_t reg2hw, // Write
+  input  keccak_loosely_ctrl_reg_pkg::keccak_loosely_ctrl_hw2reg_t hw2reg, // Read
 
 
   // Config
   input devmode_i // If 1, explicit error return for unmapped register access
 );
 
-  import keccak_ctrl_reg_pkg::* ;
+  import keccak_loosely_ctrl_reg_pkg::* ;
 
   localparam int DW = 32;
   localparam int DBW = DW/8;                    // Byte Width
@@ -33,7 +33,7 @@ module keccak_ctrl_reg_top #(
   // register signals
   logic           reg_we;
   logic           reg_re;
-  logic [AW-1:0]  reg_addr;
+  logic [BlockAw-1:0]  reg_addr;
   logic [DW-1:0]  reg_wdata;
   logic [DBW-1:0] reg_be;
   logic [DW-1:0]  reg_rdata;
@@ -54,7 +54,7 @@ module keccak_ctrl_reg_top #(
 
   assign reg_we = reg_intf_req.valid & reg_intf_req.write;
   assign reg_re = reg_intf_req.valid & ~reg_intf_req.write;
-  assign reg_addr = reg_intf_req.addr;
+  assign reg_addr = reg_intf_req.addr[BlockAw-1:0];
   assign reg_wdata = reg_intf_req.wdata;
   assign reg_be = reg_intf_req.wstrb;
   assign reg_intf_rsp.rdata = reg_rdata;
@@ -130,8 +130,8 @@ module keccak_ctrl_reg_top #(
   logic [1:0] addr_hit;
   always_comb begin
     addr_hit = '0;
-    addr_hit[0] = (reg_addr == KECCAK_CTRL_CTRL_OFFSET);
-    addr_hit[1] = (reg_addr == KECCAK_CTRL_STATUS_OFFSET);
+    addr_hit[0] = (reg_addr == KECCAK_LOOSELY_CTRL_CTRL_OFFSET);
+    addr_hit[1] = (reg_addr == KECCAK_LOOSELY_CTRL_STATUS_OFFSET);
   end
 
   assign addrmiss = (reg_re || reg_we) ? ~|addr_hit : 1'b0 ;
@@ -139,8 +139,8 @@ module keccak_ctrl_reg_top #(
   // Check sub-word write is permitted
   always_comb begin
     wr_err = (reg_we &
-              ((addr_hit[0] & (|(KECCAK_CTRL_PERMIT[0] & ~reg_be))) |
-               (addr_hit[1] & (|(KECCAK_CTRL_PERMIT[1] & ~reg_be)))));
+              ((addr_hit[0] & (|(KECCAK_LOOSELY_CTRL_PERMIT[0] & ~reg_be))) |
+               (addr_hit[1] & (|(KECCAK_LOOSELY_CTRL_PERMIT[1] & ~reg_be)))));
   end
 
   assign ctrl_we = addr_hit[0] & reg_we & !reg_error;
@@ -178,7 +178,7 @@ module keccak_ctrl_reg_top #(
 
 endmodule
 
-module keccak_ctrl_reg_top_intf
+module keccak_loosely_ctrl_reg_top_intf
 #(
   parameter int AW = 3,
   localparam int DW = 32
@@ -187,8 +187,8 @@ module keccak_ctrl_reg_top_intf
   input logic rst_ni,
   REG_BUS.in  regbus_slave,
   // To HW
-  output keccak_ctrl_reg_pkg::keccak_ctrl_reg2hw_t reg2hw, // Write
-  input  keccak_ctrl_reg_pkg::keccak_ctrl_hw2reg_t hw2reg, // Read
+  output keccak_loosely_ctrl_reg_pkg::keccak_loosely_ctrl_reg2hw_t reg2hw, // Write
+  input  keccak_loosely_ctrl_reg_pkg::keccak_loosely_ctrl_hw2reg_t hw2reg, // Read
   // Config
   input devmode_i // If 1, explicit error return for unmapped register access
 );
@@ -212,7 +212,7 @@ module keccak_ctrl_reg_top_intf
 
   
 
-  keccak_ctrl_reg_top #(
+  keccak_loosely_ctrl_reg_top #(
     .reg_req_t(reg_bus_req_t),
     .reg_rsp_t(reg_bus_rsp_t),
     .AW(AW)

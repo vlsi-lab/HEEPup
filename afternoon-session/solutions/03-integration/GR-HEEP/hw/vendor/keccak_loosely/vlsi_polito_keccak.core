@@ -4,8 +4,8 @@ CAPI=2:
 # Solderpad Hardware License, Version 2.1, see LICENSE.md for details.
 # SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 
-name: "vlsi:polito:keccak"
-description: "keccak HDL"
+name: "edge:ip:keccak_loosely"
+description: "keccak_loosely HDL"
 
 filesets:
 
@@ -14,17 +14,17 @@ filesets:
     - x-heep::packages
     - pulp-platform.org::common_cells
     files:
-    - hw/rtl/gen_sv/keccak_data_reg_pkg.sv
-    - hw/rtl/gen_sv/keccak_data_reg_top.sv
-    - hw/rtl/gen_sv/keccak_ctrl_reg_pkg.sv
-    - hw/rtl/gen_sv/keccak_ctrl_reg_top.sv
-    - hw/rtl/pkg_keccak.sv
-    - hw/rtl/keccak_dp.sv
-    - hw/rtl/keccak_f.sv
-    - hw/rtl/keccak_round_constants_gen.sv
-    - hw/rtl/keccak_round.sv
-    - hw/rtl/keccak_cu.sv
-    - wrapper/keccak_top.sv
+    - hw/rtl/gen_sv/keccak_loosely_data_reg_pkg.sv
+    - hw/rtl/gen_sv/keccak_loosely_data_reg_top.sv
+    - hw/rtl/gen_sv/keccak_loosely_ctrl_reg_pkg.sv
+    - hw/rtl/gen_sv/keccak_loosely_ctrl_reg_top.sv
+    - hw/rtl/pkg_keccak_loosely.sv
+    - hw/rtl/keccak_loosely_dp.sv
+    - hw/rtl/keccak_loosely_f.sv
+    - hw/rtl/keccak_loosely_round_constants_gen.sv
+    - hw/rtl/keccak_loosely_round.sv
+    - hw/rtl/keccak_loosely_cu.sv
+    - wrapper/keccak_loosely_top.sv
     file_type: systemVerilogSource
 
 targets:

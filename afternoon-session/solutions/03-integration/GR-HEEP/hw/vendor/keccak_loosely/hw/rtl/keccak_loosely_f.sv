@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 
 
-module keccak_f (
+module keccak_loosely_f (
     input clk,
     input rst_n,  // asynchronous, active-low
     input start_i,
@@ -22,9 +22,9 @@ logic permutation_finish;
 logic start_dp;
 
 // --------------------------------------------------------------------
-    //  Datapath – Keccak-f[1600] permutation
+    //  Datapath – keccak_loosely-f[1600] permutation
     // --------------------------------------------------------------------
-    keccak_dp u_dp (
+    keccak_loosely_dp u_dp (
         .clk      (clk),
         .rst_n    (rst_n),
         .start_i  (start_dp),          // driven by control unit
@@ -36,7 +36,7 @@ logic start_dp;
     // --------------------------------------------------------------------
     //  Control unit – starts the permutation and raises IRQ / status
     // --------------------------------------------------------------------
-    keccak_cu u_cu (
+    keccak_loosely_cu u_cu (
         .clk_i           (clk),
         .rst_ni         (rst_n),
         .start_i       (start_i),          // external command

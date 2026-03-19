@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 
 
-module keccak_cu (
+module keccak_loosely_cu (
      input logic  clk_i,
      input logic  rst_ni,
      input logic  start_i,
@@ -87,7 +87,7 @@ module keccak_cu (
    endcase
    end // always_comb @
 
-   endmodule : keccak_cu
+endmodule : keccak_loosely_cu
 
 	    
       

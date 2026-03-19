@@ -9,6 +9,6 @@
   upstream:
   {
     url: https://github.com/vlsi-lab/heepup_keccak_loosely.git
-    rev: 79e4e6776dbb858739787f5bd3d2160c7fb36063
+    rev: 109b7830bf90385e8637c47546a09fdb21669bb8
   }
 }

@@ -82,6 +82,10 @@ mcu-gen: | $(BUILD_DIR)/
 	$(MAKE) verible
 	@echo "✅ DONE! X-HEEP MCU and GR-HEEP generated successfully"
 
+##
+keccak-gen:
+	export X_HEEP_PATH=$(X_HEEP_DIR) && export SW_PATH=$(ROOT_DIR)/sw/external/drivers/keccak && cd ./hw/vendor/keccak_loosely/ && ./keccak_reg_gen.sh && cd -
+
 ## @section Verilator
 
 ## Verilator simulation with C++

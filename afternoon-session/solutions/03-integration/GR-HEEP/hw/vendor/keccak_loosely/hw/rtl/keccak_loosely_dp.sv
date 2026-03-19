@@ -8,12 +8,12 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 
 
-import pkg_keccak::k_state;
-import pkg_keccak::KEC_N;
-import pkg_keccak::IN_BUF_SIZE;
-import pkg_keccak::OUT_BUF_SIZE;
+import pkg_keccak_loosely::k_state;
+import pkg_keccak_loosely::KEC_N;
+import pkg_keccak_loosely::IN_BUF_SIZE;
+import pkg_keccak_loosely::OUT_BUF_SIZE;
 
-module keccak_dp (
+module keccak_loosely_dp (
     input clk,
     input rst_n,  // asynchronous, active-low
     input start_i,   // pulse: start a new permutation

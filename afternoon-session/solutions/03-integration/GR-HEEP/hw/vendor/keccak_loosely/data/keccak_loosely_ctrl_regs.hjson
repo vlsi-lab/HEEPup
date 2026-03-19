@@ -1,5 +1,5 @@
 {
-    name: "keccak_ctrl",
+    name: "keccak_loosely_ctrl",
     clock_primary: "clk_i",
     reset_primary: "rst_ni",
     bus_interfaces: [
@@ -8,7 +8,7 @@
     regwidth: "32",
     registers: [
         { name: "CTRL"
-        	  desc: " Trigger the Keccak "
+        	  desc: " Trigger the keccak_loosely "
         	  swaccess: "wo",
         	  hwaccess: "hro",
         	  //hwqe: "true",
@@ -19,7 +19,7 @@
         	  ]	
         	},
         	{ name: "STATUS"
-        	  desc: " Contains status information about the Keccak"
+        	  desc: " Contains status information about the keccak_loosely"
         	  swaccess: "ro",
         	  hwaccess: "hwo",
         	  //hwext : "true",

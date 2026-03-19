@@ -7,7 +7,7 @@
 //                                                                                      //
 //////////////////////////////////////////////////////////////////////////////////////////
 
-module keccak_top 
+module keccak_loosely_top 
   import keccak_data_reg_pkg::*;
   import keccak_ctrl_reg_pkg::*;
   import reg_pkg::*;
@@ -57,7 +57,7 @@ module keccak_top
    );
 
 
-   keccak_data_reg_top #(
+   keccak_loosely_data_reg_top #(
 	.reg_req_t(reg_req_t),
 	.reg_rsp_t(reg_rsp_t)
 	) i_data_regfile (
@@ -68,12 +68,12 @@ module keccak_top
 		.reg_req_i(periph_req_i),
 		.reg_rsp_o(periph_rsp_o),
 		
-		// Signals from regfile to keccak IP
+		// Signals from regfile to keccak_loosely IP
 		.reg2hw(reg_file_to_ip_data),
 		.hw2reg(ip_to_reg_file_data) 
 	);
 
-   keccak_ctrl_reg_top #(
+   keccak_loosely_ctrl_reg_top #(
 	.reg_req_t(reg_req_t),
 	.reg_rsp_t(reg_rsp_t)
 	) i_ctrl_regfile (
@@ -84,7 +84,7 @@ module keccak_top
 		.reg_req_i(reg_req_i),
 		.reg_rsp_o(reg_rsp_o),
 		
-		// Signals from regfile to keccak IP
+		// Signals from regfile to keccak_loosely IP
 		.reg2hw(reg_file_to_ip_ctrl),
 		.hw2reg(ip_to_reg_file_ctrl) 
 	);
@@ -95,7 +95,7 @@ module keccak_top
    wire logic [1599:0] din_keccak, dout_keccak;
    assign din_keccak = reg_file_to_ip_data;
 			       			        	
-	keccak_f i_keccak (
+	keccak_loosely_f i_keccak (
 		.clk(clk_i),
 		.rst_n(rst_ni),
 		.start_i(reg_file_to_ip_ctrl),
@@ -108,4 +108,4 @@ module keccak_top
   assign ip_to_reg_file_data = dout_keccak;
    
   
-endmodule : keccak_top
+endmodule : keccak_loosely_top

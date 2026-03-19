@@ -7,12 +7,12 @@
 //                                                                                      //
 //////////////////////////////////////////////////////////////////////////////////////////
 
-import pkg_keccak::k_plane;
-import pkg_keccak::k_state;
-import pkg_keccak::KEC_N;
-import pkg_keccak::ABS;
+import pkg_keccak_loosely::k_plane;
+import pkg_keccak_loosely::k_state;
+import pkg_keccak_loosely::KEC_N;
+import pkg_keccak_loosely::ABS;
 
-module keccak_round (
+module keccak_loosely_round (
     input   k_state         Round_in,
     input   [KEC_N-1:0]     Round_constant_signal,
     output  k_state         Round_out);

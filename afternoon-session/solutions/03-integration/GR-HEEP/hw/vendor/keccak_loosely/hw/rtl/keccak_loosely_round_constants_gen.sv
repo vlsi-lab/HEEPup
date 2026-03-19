@@ -8,7 +8,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 
 
-module keccak_round_constants_gen(
+module keccak_loosely_round_constants_gen(
         input   [4:0]          round_number,
         output  logic [63:0]  round_constant_signal_out);
 
