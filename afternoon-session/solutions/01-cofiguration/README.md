@@ -43,7 +43,7 @@ After each generation, inspect the produced output in `x-heep-main` and verify t
 To use the pulp extensions, compile with:
 
 ```sh
-make app PROJECT=example_matmul ARCH=32imc_zicsr_zifencei_xcvhwlp_xcvmem_xcvmac_xcvbi_xcvalu_xcvsimd_xcvbitmanip
+make app PROJECT=example_matmul ARCH=rv32imc_zicsr_zifencei_xcvhwlp_xcvmem_xcvmac_xcvbi_xcvalu_xcvsimd_xcvbitmanip
 ```
 
 ## Functional Validation
