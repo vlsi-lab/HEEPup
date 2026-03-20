@@ -22,6 +22,11 @@ filesets:
     - hw/gr-heep/gr_heep.sv
     file_type: systemVerilogSource
 
+  keccak_rtl:
+    depend:
+    - edge:ip:keccak_tightly
+    - vlsi:polito:keccak
+
   # Simulation
   files_verilator_waiver:
     files:
@@ -189,6 +194,7 @@ targets:
     filesets:
     - files_rtl_generic
     - target_sim? (tool_verilator? (files_verilator_waiver))
+    - keccak_rtl
     toplevel: [gr_heep]
 
   sim:
@@ -240,6 +246,11 @@ targets:
           - '-CFLAGS "-Wall -fpermissive"'
           - '-LDFLAGS "-pthread -lutil -lelf"'
           - "-Wall"
+          - "-Wno-UNUSEDPARAM"
+          - "-Wno-UNUSEDSIGNAL"
+          - "-Wno-DECLFILENAME"
+          - "-Wno-WIDTHTRUNC"
+          - "-Wno-MODDUP"
       modelsim:
         vlog_options:
         - -override_timescale 1ns/1ps

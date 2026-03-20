@@ -240,6 +240,11 @@ targets:
           - '-CFLAGS "-Wall -fpermissive"'
           - '-LDFLAGS "-pthread -lutil -lelf"'
           - "-Wall"
+          - "-Wno-UNUSEDPARAM"
+          - "-Wno-UNUSEDSIGNAL"
+          - "-Wno-DECLFILENAME"
+          - "-Wno-WIDTHTRUNC"
+          - "-Wno-MODDUP"
       modelsim:
         vlog_options:
         - -override_timescale 1ns/1ps

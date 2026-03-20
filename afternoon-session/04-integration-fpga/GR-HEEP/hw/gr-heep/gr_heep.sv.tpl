@@ -354,6 +354,17 @@ module gr_heep (
   % endif
   assign exit_value_out_x = exit_value[0];
 
+  keccak_tightly_wrapper keccak_tightly_wrapper_i (
+    .clk_i(clk_in_x),
+    .rst_ni(rst_nin_sync),
+    .xif_compressed_if(ext_xif.coproc_compressed),
+    .xif_issue_if(ext_xif.coproc_issue),
+    .xif_commit_if(ext_xif.coproc_commit),
+    .xif_mem_if(ext_xif.coproc_mem),
+    .xif_mem_result_if(ext_xif.coproc_mem_result),
+    .xif_result_if(ext_xif.coproc_result)
+  );
+
   // Pad ring
   // --------
   gr_heep_pad_ring gr_heep_pad_ring_i (

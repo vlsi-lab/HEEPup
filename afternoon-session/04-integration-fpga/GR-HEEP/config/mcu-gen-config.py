@@ -8,6 +8,7 @@
 import re
 from x_heep_gen.xheep import XHeep
 from x_heep_gen.cpu.cpu import CPU
+from x_heep_gen.cv_x_if import CvXIf
 from x_heep_gen.bus_type import BusType
 from x_heep_gen.memory_ss.memory_ss import MemorySS
 from x_heep_gen.memory_ss.linker_section import LinkerSection
@@ -47,12 +48,23 @@ def config():
     # Set cv32e40px CPU
     system.set_cpu(CPU("cv32e40px"))
 
+    system.set_xif(
+            CvXIf(
+                x_num_rs=3,  
+                x_id_width=4,
+                x_mem_width=32,
+                x_rfr_width=32,
+                x_rfw_width=32,
+                x_misa=0x0,
+                x_ecs_xs=0x0,
+            )
+        )
     # Memory subsystem
     # - 2 x 32kiB firmware and data
     # - 2 x 16kiB interleaved banks
     memory_ss = MemorySS()
-    memory_ss.add_ram_banks([32] * 2)
-    memory_ss.add_ram_banks_il(4, 16, "data_interleaved")
+    memory_ss.add_ram_banks([32] * 4)
+    memory_ss.add_ram_banks_il(4, 16, "")
     # Linker script sections
     memory_ss.add_linker_section(LinkerSection.by_size("code", 0, 0x0000E800))
     memory_ss.add_linker_section(LinkerSection("data", 0x0000E800, None))
@@ -118,10 +130,10 @@ def gr_heep_config():
 
     # External slaves memory map
     ext_xbar_slaves = {
-        #     "slave_0": {
-        #         "offset":    0x00000000,
-        #         "length":    0x00010000,
-        #     },
+        # "keccak": {
+        #     "offset":    0x00000000,
+        #     "length":    0x00010000,
+        # },
         #     "slave_1": {
         #         "offset":    0x00010000,
         #         "length":    0x00010000,
@@ -130,10 +142,10 @@ def gr_heep_config():
 
     # External peripherals
     ext_periph = {
-        #     "peripheral_0": {
-        #         "offset": 0x00000000,
-        #         "length": 0x00001000,
-        #     },
+        "keccak": {
+            "offset": 0x00000000,
+            "length": 0x00001000,
+        },
         #     "peripheral_1": {
         #         "offset": 0x00001000,
         #         "length": 0x00001000,
@@ -146,7 +158,7 @@ def gr_heep_config():
 
     ao_spc_num = 1
 
-    external_interrupts = 0
+    external_interrupts = 1
 
     # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
     # Do not modify below this line unless you know what you are doing

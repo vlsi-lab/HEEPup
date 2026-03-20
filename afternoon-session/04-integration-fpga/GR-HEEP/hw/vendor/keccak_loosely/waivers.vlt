@@ -1,0 +1,27 @@
+`verilator_config
+
+// keccak_loosely_data_reg_top.sv
+lint_off -rule DECLFILENAME -file "*hw/rtl/gen_sv/keccak_loosely_data_reg_top.sv" -lines 3265
+
+// keccak_loosely_ctrl_reg_top.sv
+lint_off -rule DECLFILENAME -file "*hw/rtl/gen_sv/keccak_loosely_ctrl_reg_top.sv" -lines 181
+
+// keccak_loosely_f.sv
+lint_off -rule PINMISSING   -file "*hw/rtl/keccak_loosely_f.sv" -lines 39
+
+// pkg_keccak_loosely.sv
+lint_off -rule UNUSEDPARAM  -file "*hw/rtl/pkg_keccak_loosely.sv" -lines 17-18
+
+// keccak_loosely_cu.sv
+lint_off -rule COMBDLY      -file "*hw/rtl/keccak_loosely_cu.sv" -lines 52
+lint_off -rule COMBDLY      -file "*hw/rtl/keccak_loosely_cu.sv" -lines 54-55
+lint_off -rule COMBDLY      -file "*hw/rtl/keccak_loosely_cu.sv" -lines 57-58
+lint_off -rule COMBDLY      -file "*hw/rtl/keccak_loosely_cu.sv" -lines 62-64
+lint_off -rule COMBDLY      -file "*hw/rtl/keccak_loosely_cu.sv" -lines 68
+lint_off -rule COMBDLY      -file "*hw/rtl/keccak_loosely_cu.sv" -lines 74-78
+lint_off -rule COMBDLY      -file "*hw/rtl/keccak_loosely_cu.sv" -lines 81-83
+lint_off -rule COMBDLY      -file "*hw/rtl/keccak_loosely_cu.sv" -lines 85
+
+// rr_arb_tree.sv
+lint_off -rule SYNCASYNCNET -file "*vendor/pulp_platform_common_cells/src/rr_arb_tree.sv" -lines 91
+

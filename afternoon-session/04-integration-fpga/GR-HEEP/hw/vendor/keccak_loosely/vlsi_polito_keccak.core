@@ -1,0 +1,38 @@
+CAPI=2:
+
+# Copyright 2026 POLITO
+# Solderpad Hardware License, Version 2.1, see LICENSE.md for details.
+# SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
+
+name: "edge:ip:keccak_loosely"
+description: "keccak_loosely HDL"
+
+filesets:
+
+  rtl:
+    depend:
+    - pulp-platform.org::common_cells
+    files:
+    - hw/rtl/gen_sv/keccak_loosely_data_reg_pkg.sv
+    - hw/rtl/gen_sv/keccak_loosely_data_reg_top.sv
+    - hw/rtl/gen_sv/keccak_loosely_ctrl_reg_pkg.sv
+    - hw/rtl/gen_sv/keccak_loosely_ctrl_reg_top.sv
+    - hw/rtl/pkg_keccak_loosely.sv
+    - hw/rtl/keccak_loosely_dp.sv
+    - hw/rtl/keccak_loosely_f.sv
+    - hw/rtl/keccak_loosely_round_constants_gen.sv
+    - hw/rtl/keccak_loosely_round.sv
+    - hw/rtl/keccak_loosely_cu.sv
+    - wrapper/keccak_loosely_top.sv
+    file_type: systemVerilogSource
+
+  waivers:
+    files:
+    - waivers.vlt
+    file_type: vlt
+
+targets:
+  default: &default_target
+    filesets:
+    - rtl
+    - waivers
