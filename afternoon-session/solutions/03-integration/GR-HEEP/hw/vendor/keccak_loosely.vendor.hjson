@@ -3,19 +3,18 @@
 // SPDX-License-Identifier: Apache-2.0 WITH SHL-2.1
 
 {
-  name: "keccak_loosely",
-  target_dir: "keccak_loosely",
+  name: "keccak",
+  target_dir: "keccak",
 
   upstream: {
-    url: "https://github.com/vlsi-lab/heepup_keccak_loosely.git",
-    rev: "main",
+    url: "https://github.com/vlsi-lab/keccak.git",
+    rev: "7a4c047d139afee6c741943f88c1572e18052be7",
   },
 
   exclude_from_upstream: [
     ".github",
     "ci",
-    "sw",
-    "keccak-driver"
   ]
+
   
 }

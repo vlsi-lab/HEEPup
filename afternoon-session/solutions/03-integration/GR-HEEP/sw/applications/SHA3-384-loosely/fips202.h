@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include "keccak_driver.h"
 
 #define SHAKE128_RATE 168
 #define SHAKE256_RATE 136

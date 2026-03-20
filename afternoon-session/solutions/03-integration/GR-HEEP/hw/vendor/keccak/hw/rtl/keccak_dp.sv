@@ -1,19 +1,18 @@
-//////////////////////////////////////////////////////////////////////////////////////////
-// Authors:      Alessandra Dolmeta - alessandra.dolmeta@polito.it                      //
-//               Valeria Piscopo    - valeria.piscopo@polito.it                         //
-// Design Name:  keccak_dp                                                              //
-// Language:     SystemVerilog                                                          //
-// Based on the designed of Michal Peeters and Gilles Van Assche.                       //
-//                                                                                      //
-//////////////////////////////////////////////////////////////////////////////////////////
+// The Keccak sponge function, designed by Guido Bertoni, Joan Daemen,
+// Michal Peeters and Gilles Van Assche. 
+//
+// keccak_datapath: datapath of keccak core.  
+// Designed by Mattia Mirigaldi
+// mattia.mirigaldi@polito.it
+// Keccak-f[1600] permutation datapath. 
+// When you assert start_i with a 1600-bit block on din, the entity runs all 24 rounds and raises ready_o once the permutation is finished.
 
+import pkg_keccak::k_state;
+import pkg_keccak::KEC_N;
+import pkg_keccak::IN_BUF_SIZE;
+import pkg_keccak::OUT_BUF_SIZE;
 
-import pkg_keccak_loosely::k_state;
-import pkg_keccak_loosely::KEC_N;
-import pkg_keccak_loosely::IN_BUF_SIZE;
-import pkg_keccak_loosely::OUT_BUF_SIZE;
-
-module keccak_loosely_dp (
+module keccak_dp (
     input clk,
     input rst_n,  // asynchronous, active-low
     input start_i,   // pulse: start a new permutation
@@ -38,13 +37,13 @@ module keccak_loosely_dp (
     //--------------------------------------------------------------------
     //  Sub-blocks
     //--------------------------------------------------------------------
-    keccak_loosely_round round_map (
+    keccak_round round_map (
         .Round_in              ( round_in              ),
         .Round_constant_signal ( round_constant_signal ),
         .Round_out             ( round_out             )
     );
 
-    keccak_loosely_round_constants_gen round_constants_gen (
+    keccak_round_constants_gen round_constants_gen (
         .round_number              ( counter_nr_rounds   ),
         .round_constant_signal_out ( round_constant_signal )
     );

@@ -9,9 +9,8 @@ description: "keccak_loosely HDL"
 
 filesets:
 
-  files_rtl_sv:
+  rtl:
     depend:
-    - x-heep::packages
     - pulp-platform.org::common_cells
     files:
     - hw/rtl/gen_sv/keccak_loosely_data_reg_pkg.sv
@@ -27,7 +26,13 @@ filesets:
     - wrapper/keccak_loosely_top.sv
     file_type: systemVerilogSource
 
+  waivers:
+    files:
+    - waivers.vlt
+    file_type: vlt
+
 targets:
-  default:
+  default: &default_target
     filesets:
-    - files_rtl_sv
+    - rtl
+    - waivers

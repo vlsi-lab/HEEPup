@@ -64,7 +64,7 @@ def config():
     # - 2 x 16kiB interleaved banks
     memory_ss = MemorySS()
     memory_ss.add_ram_banks([32] * 4)
-    memory_ss.add_ram_banks_il(4, 16, "data_interleaved")
+    memory_ss.add_ram_banks_il(4, 16, "")
     # Linker script sections
     memory_ss.add_linker_section(LinkerSection.by_size("code", 0, 0x0000E800))
     memory_ss.add_linker_section(LinkerSection("data", 0x0000E800, None))
@@ -130,10 +130,10 @@ def gr_heep_config():
 
     # External slaves memory map
     ext_xbar_slaves = {
-        "keccak": {
-            "offset":    0x00000000,
-            "length":    0x00010000,
-        },
+        # "keccak": {
+        #     "offset":    0x00000000,
+        #     "length":    0x00010000,
+        # },
         #     "slave_1": {
         #         "offset":    0x00010000,
         #         "length":    0x00010000,

@@ -1,8 +1,5 @@
 // Generated register defines for keccak
 
-// Copyright information found in source file:
-// Copyright 2025 PoliTo
-
 #ifndef _KECCAK_REG_DEFS_
 #define _KECCAK_REG_DEFS_
 

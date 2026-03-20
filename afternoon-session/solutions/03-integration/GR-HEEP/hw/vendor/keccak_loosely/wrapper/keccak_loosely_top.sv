@@ -8,8 +8,8 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 
 module keccak_loosely_top 
-  import keccak_data_reg_pkg::*;
-  import keccak_ctrl_reg_pkg::*;
+  import keccak_loosely_data_reg_pkg::*;
+  import keccak_loosely_ctrl_reg_pkg::*;
   import reg_pkg::*;
   import obi_pkg::*;  
 (
@@ -28,10 +28,10 @@ module keccak_loosely_top
    reg_req_t periph_req_i;   
    reg_rsp_t periph_rsp_o;
    
-   keccak_data_reg2hw_t reg_file_to_ip_data;
-   keccak_data_hw2reg_t ip_to_reg_file_data;   
-   keccak_ctrl_reg2hw_t reg_file_to_ip_ctrl;
-   keccak_ctrl_hw2reg_t ip_to_reg_file_ctrl;
+   keccak_loosely_data_reg2hw_t reg_file_to_ip_data;
+   keccak_loosely_data_hw2reg_t ip_to_reg_file_data;   
+   keccak_loosely_ctrl_reg2hw_t reg_file_to_ip_ctrl;
+   keccak_loosely_ctrl_hw2reg_t ip_to_reg_file_ctrl;
 
 	
    periph_to_reg #(
@@ -102,6 +102,7 @@ module keccak_loosely_top
 		.Din(din_keccak),
 		.Dout(dout_keccak),
 		.status_d(ip_to_reg_file_ctrl.status.d),
+		.status_de(ip_to_reg_file_ctrl.status.de),
 		.keccak_intr(keccak_intr_o)
 	);
 
