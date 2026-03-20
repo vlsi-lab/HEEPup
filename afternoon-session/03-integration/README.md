@@ -1,92 +1,90 @@
-# Accelerator Integration Guide for GR-HEEP
+# 03 - Accelerator Integration in GR-HEEP 🔧
 
-This guide provides step-by-step instructions for integrating an accelerator into the GR-HEEP system.
+This stage is where platform architecture and hardware design meet. You will integrate a Keccak accelerator into GR-HEEP, rebuild the generated system, and validate behavior in simulation before moving to FPGA.
 
-## Integration Steps
+The focus is architectural clarity: where the accelerator is instantiated, how it is connected, and how the software stack observes the result.
 
-### Step 1: Update Vendor Modules
+## Integration storyline 🧭
 
-Run the vendor-update command to integrate the required accelerator modules:
+1. Sync accelerator vendor sources.
+2. Instantiate the accelerator in the peripheral template.
+3. Connect interfaces at top level.
+4. Regenerate, rebuild, and simulate.
+
+## Enter GR-HEEP
 
 ```bash
-make vendor-update MODULE=keccak_loosely vendor-update MODULE=keccak_tightly
+cd GR-HEEP
 ```
 
-This command fetches and configures both the `keccak_loosely` and `keccak_tightly` modules.
+## 1) Update vendored accelerator modules 📦
 
-### Step 2: Instantiate Accelerator in Peripherals Template
+Run the two updates explicitly:
 
-Instantiate the `keccak_loosely` accelerator in the `gr_heep_peripherals` template:
+```bash
+make vendor-update MODULE_NAME=keccak_loosely
+make vendor-update MODULE_NAME=keccak_tightly
+```
 
-- Navigate to: `hw/gr-heep/gr_heep_peripherals.sv.tpl`
-- Add the accelerator instantiation with appropriate module parameters and signal connections
+If you need to refresh everything:
 
-### Step 3: Connect to Extension Interface
+```bash
+make vendor-update-all
+```
 
-Directly connect the accelerator to the extension interface in the `gr_heep` template:
+## 2) Instantiate the accelerator in the peripheral template 🧩
 
-- Navigate to: `hw/gr-heep/gr_heep.sv.tpl`
-- Connect the accelerator signals to the top-level extension interface
-- Ensure proper port mappings and signal routing
+Edit:
 
-## Simulation and Testing
+- `hw/gr-heep/gr_heep_peripherals.sv.tpl`
 
-Once the accelerator is integrated, follow these steps to simulate and test it:
+Add the accelerator module instance and wire the expected control/data signals. Keep naming consistent and explicit so generated files remain readable.
 
-### Step 1: Generate MCU Configuration
+## 3) Connect the integration points at top level 🔌
 
-Run the MCU configuration generator:
+Edit:
+
+- `hw/gr-heep/gr_heep.sv.tpl`
+
+Route the accelerator-facing signals through the top-level integration fabric and verify reset/clock behavior.
+
+## 4) Regenerate and simulate ✅
+
+After every meaningful RTL/template update:
 
 ```bash
 make mcu-gen
-```
-
-This generates the necessary configuration files and HDL based on your accelerator setup.
-
-### Step 2: Build the Application
-
-Compile the test application:
-
-```bash
 make app
-```
-
-### Step 3: Build the Verilator Simulation
-
-Build the Verilator simulation:
-
-```bash
 make verilator-build
-```
-
-### Step 4: Run the Verilator Simulation
-
-Execute the simulation:
-
-```bash
 make verilator-run
 ```
 
-## Testing Applications
+## Suggested application progression 🧪
 
-The following applications are available for testing the accelerator:
+The following applications are available in `sw/applications`:
 
-1. **gr_heep_hello_world** (Recommended starting point)
-   - Location: `sw/applications/gr_heep_hello_world/`
-   - A basic hello world application to verify the accelerator integration
+- `gr_heep_hello_world`
+- `SHA3-384-baseline`
+- `SHA3-384-loosely`
+- `SHA3-384-tightly`
 
-2. **Additional Applications**
-   - Locate in: `sw/applications/`
-   - Available accelerator-specific test applications:
-     - `SHA3-384-baseline`
-     - `SHA3-384-loosely`
-     - `SHA3-384-tightly`
+Practical flow:
 
-To test with a specific application, update the build configuration to point to your desired application folder and re-run the build and simulation steps.
+1. Start with `gr_heep_hello_world` to confirm platform integrity.
+2. Move to `SHA3-384-baseline` for reference behavior.
+3. Compare loosely and tightly coupled flows to evaluate integration impact.
 
-## Troubleshooting
+## What to document as you go 📝
 
-- Ensure all vendor modules are properly updated before building
-- Verify that the accelerator signals are correctly connected in both templates
-- Check simulation logs for any connection or timing issues
-- Confirm the MCU configuration is generated after any changes to the accelerator instantiation
+- What you changed in each template and why.
+- Which run is your baseline.
+- What changed in runtime behavior and/or cycle count.
+- Any assumptions on bus interactions, latency, or contention.
+
+This framing turns the task into a reproducible integration narrative, not just a checklist.
+
+## Troubleshooting hints 🧯
+
+- Generation errors: check template syntax and signal names first.
+- Simulation mismatch: confirm that regenerated files are up to date after edits.
+- Silent runtime failures: verify that software project selection matches your intended accelerator path.

@@ -1,8 +1,16 @@
-## Configuration Exercise
+# Solutions - 01 Configuration Study ✅
 
-In this activity, you will design and compare eight X-HEEP configurations, then measure their impact on execution cycles.
+This folder contains the reference implementation for the configuration study. Use it as a comparison companion, not as a blind copy source.
 
-Your implementation targets are the following Python files in `x-heep-main/configs`:
+## How to use this solution effectively 🧭
+
+- First, complete your own attempt in `../01-cofiguration`.
+- Then compare structure and parameter choices file by file.
+- Focus on understanding *why* each change was made.
+
+## Reference scope
+
+The solution covers the eight configuration files in `x-heep-main/configs`:
 
 - `00.py`
 - `01.py`
@@ -13,105 +21,84 @@ Your implementation targets are the following Python files in `x-heep-main/confi
 - `06.py`
 - `07.py`
 
-Use `configs/general.py` as your structural reference.
+## Terminology quick guide 📚
 
-## Exercise Goal
+- `NORMAL` memory: contiguous bank organization. Addresses map in larger continuous regions, simple and predictable, but may expose hotspots when many accesses target nearby locations.
+- `INTL` memory: interleaved bank organization. Consecutive addresses are spread across banks, which can improve parallel memory throughput for streaming/access-heavy workloads.
+- `ONE2M` bus: a simpler interconnect style with more centralized arbitration behavior. Good baseline for understanding non-aggressive fabric behavior.
+- `N2M` bus: a more scalable interconnect style that better supports concurrent traffic between multiple initiators and memory/peripheral targets.
+- `CV32E20`: compact, lower-complexity core option; useful as a baseline CPU.
+- `CV32E40P`: more performance-oriented core than CV32E20.
+- `XPULP`: ISA extension set on top of CV32E40P, adding instructions that can accelerate DSP-like and tight compute kernels.
+- `DMA channels`: number of independent DMA transfer contexts that can be scheduled.
+- `DMA master ports`: number of bus master interfaces available to DMA; more master ports can increase real transfer concurrency when traffic patterns allow it.
 
-In this exercise, you will explore how different architectural choices in the X-HEEP platform affect the performance of a simple matrix multiplication workload (`example_matmul`). By implementing and comparing eight distinct configurations, you will gain insights into the trade-offs between CPU microarchitecture, bus topology, memory subsystem design, and data movement capabilities.
+Rule of thumb: channels describe "how many transfers can be managed", while master ports describe "how many transfers can contend for the bus in parallel".
 
-- CPU microarchitecture changes (`CV32E20`, `CV32E40P`, `CV32E40P with PULP extensions`)
-- Bus topology changes (`ONE2M` vs `N2M`)
-- Memory subsystem changes (`NORMAL` contiguous vs `INTL` interleaved)
-- Data movement and concurrency changes (number of DMA channels and DMA master ports) (use `example_dma` for testing)
+## What each configuration is doing 🧩
 
-Across all eight configurations, memory is fixed to 10 banks of 32 KB each (320 KB total).
+The table below summarizes the architectural intent behind each configuration.
 
-At the end, you should be able to explain not only what each config contains, but also why some configs complete `example_matmul` in fewer cycles.
+| Config | CPU | Bus | Memory | DMA setup | Main intent |
+|--------|-----|-----|--------|-----------|-------------|
+| `00.py` | CV32E20 | ONE2M | NORMAL | 1 channel | Baseline reference point |
+| `01.py` | CV32E40P | N2M | INTL | 1 channel | Better core + more parallel memory/interconnect behavior |
+| `02.py` | CV32E40P | ONE2M | NORMAL | 1 channel | Isolate core effect while reverting interconnect/memory |
+| `03.py` | CV32E40P + XPULP | N2M | INTL | 1 channel | Add ISA acceleration on top of a high-throughput fabric |
+| `04.py` | CV32E20 | N2M | INTL | 2 channels | Test DMA parallelism with simpler core |
+| `05.py` | CV32E20 | ONE2M | NORMAL | 2 channels, 1 master | More DMA channels without full interconnect scaling |
+| `06.py` | CV32E40P | ONE2M | NORMAL | 2 channels, 2 masters | Push DMA concurrency while keeping memory contiguous |
+| `07.py` | CV32E40P + XPULP | N2M | INTL | 2 channels, 2 masters | Full-feature configuration for peak parallelism |
 
-## Build and Generate
+## How configurations change from one to the next 🔄
 
-Generate with:
+Read the sequence as an experimental design, not as random variants:
 
-```sh
+1. `00 -> 01`: changes core, bus, and memory model together to observe an aggressive architecture jump.
+2. `01 -> 02`: keeps the stronger core but rolls back bus/memory to separate CPU gains from fabric gains.
+3. `02 -> 03`: enables XPULP to evaluate ISA-level acceleration impact.
+4. `03 -> 04`: drops back to CV32E20 while increasing DMA channels, probing data-movement vs compute balance.
+5. `04 -> 05`: reverts bus/memory to ONE2M/NORMAL while keeping dual DMA channels, isolating topology effects.
+6. `05 -> 06`: upgrades core and DMA master parallelism, still on contiguous memory.
+7. `06 -> 07`: combines XPULP with N2M + INTL for the most capable setup.
+
+## What to expect in practice 📈
+
+- `example_matmul` usually reacts strongly to CPU class and XPULP support.
+- Interleaved memory (`INTL`) and `N2M` are more visible when access patterns are memory intensive.
+- Extra DMA channels or master ports help only when software actually drives concurrent transfers.
+- The best configuration depends on workload mix, not on one metric alone.
+
+## Verification flow 🔁
+
+Use the same flow as in the exercise:
+
+```bash
 make mcu-gen PYTHON_X_HEEP_CFG=configs/00.py X_HEEP_CFG=configs/python_unsupported.hjson
+make app PROJECT=hello_world
+make verilator-build
+make verilator-run
 ```
 
-Then repeat for `configs/01.py` through `configs/07.py`.
+Then repeat for all configurations and compare against your own logs.
 
-After each generation, inspect the produced output in `x-heep-main` and verify that the expected architecture choices were applied.
+XPULP-enabled build reminder:
 
-To use the pulp extensions, compile with:
-
-```sh
+```bash
 make app PROJECT=example_matmul ARCH=rv32imc_zicsr_zifencei_xcvhwlp_xcvmem_xcvmac_xcvbi_xcvalu_xcvsimd_xcvbitmanip
 ```
 
-## Functional Validation
+## What to compare when reviewing 🔬
 
-For every configuration:
+- CPU/interconnect/memory coherence.
+- DMA channel and master-port settings.
+- Consistency of generation outputs.
+- Impact on workload cycle counts.
 
-1. Run Verilator simulation of `hello_world` to ensure the platform boots correctly.
-2. Run Verilator simulation of `example_matmul` for a comparable workload.
-3. Modify `example_matmul` to print cycle count so results are directly comparable across all 8 configurations.
+## Suggested reflection prompts ✍️
 
-## Report Template
+- Which parameters had the largest measured impact?
+- Where did intuition and measured behavior diverge?
+- Which configuration offers the best balance for your use case?
 
-Fill this table after collecting the cycle counts:
-
-| Config | Cycles |
-|--------|--------|
-| 00.py  |        |
-| 01.py  |        |
-| 02.py  |        |
-| 03.py  |        |
-| 04.py  |        |
-| 05.py  |        |
-| 06.py  |        |
-| 07.py  |        |
-
-## Configuration Targets
-
-### `00.py`
-
-It uses `CV32E20`, `ONE2M` bus, the `NORMAL` memory subsystem (contiguous), and 1 DMA channel, with 10 banks of 32 KB each.
-
-### `01.py`
-
-Here you move to `CV32E40P` and also change interconnect and memory subsystem (`N2M` + `INTL`), while keeping 1 DMA channel. Memory is interleaved, still with 10 banks of 32 KB each.
-
-### `02.py`
-
-You keep `CV32E40P`, but return to `ONE2M` and `NORMAL`, still with 1 DMA channel. Memory remains fixed at 10 banks of 32 KB in contiguous mode.
-
-### `03.py`
-
-This configuration uses the `CV32E40P` core with PULP extensions enabled while keeping `N2M`, `INTL`, and 1 DMA channel. Memory is again interleaved with 10 x 32 KB banks.
-
-### `04.py`
-
-You switch back to `CV32E20`, keep `N2M` + `INTL`, and increase to 2 DMA channels. Memory is interleaved (10 banks, 32 KB each).
-
-### `05.py`
-
-This setup uses `CV32E20`, `ONE2M`, `NORMAL`, 2 DMA channels, and 1 DMA master port. Memory stays at 10 contiguous 32 KB banks.
-
-### `06.py`
-
-This configuration combines `CV32E40P`, `ONE2M`, `NORMAL`, 2 DMA channels, and 2 DMA master ports. Memory stays at 10 contiguous 32 KB banks.
-
-### `07.py` - Full-feature high-end setup
-
-This is the richest configuration in the set: `CV32E40P XPULP` (PULP extensions enabled), `N2M`, `INTL`, 2 DMA channels, and 2 DMA master ports. Memory is interleaved with 10 banks of 32 KB.
-
-## Suggested Implementation Order
-
-Use this progression to reduce debugging time and keep diffs understandable:
-
-1. Implement `00.py` first as your known-good baseline.
-2. Continue with `01.py`.
-3. Then `02.py`.
-4. Then `03.py`.
-5. Then `04.py`.
-6. Then `05.py`.
-7. Then `06.py`.
-8. Finally `07.py`.
+Treat this solution as a benchmark for reasoning quality, not only for final values.
