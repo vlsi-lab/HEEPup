@@ -59,7 +59,7 @@
  
  
  /*************************************************
-  * Name:        KeccakF1600_StatePermute
+  * Name:        KeccakF1600_StatePermute_tightly
   *
   * Description: The Keccak F1600 Permutation
   *
@@ -93,7 +93,7 @@
     0x80000000, 0x80008008
 };
 
-void KeccakF1600_StatePermute(uint32_t *state){
+void KeccakF1600_StatePermute_tightly(uint32_t *state){
 
     uint32_t Aba0, Abe0, Abi0, Abo0, Abu0;
     uint32_t Aba1, Abe1, Abi1, Abo1, Abu1;
@@ -992,7 +992,7 @@ void KeccakF1600_StatePermute(uint32_t *state){
              s[i] ^= load64(m + 8 * i);
          }
  
-         KeccakF1600_StatePermute((uint32_t *)s);
+         KeccakF1600_StatePermute_tightly((uint32_t *)s);
          mlen -= r;
          m += r;
      }
@@ -1026,7 +1026,7 @@ void KeccakF1600_StatePermute(uint32_t *state){
  static void keccak_squeezeblocks(uint8_t *h, size_t nblocks,
                                   uint64_t *s, uint32_t r) {
      while (nblocks > 0) {
-         KeccakF1600_StatePermute((uint32_t *)s);
+         KeccakF1600_StatePermute_tightly((uint32_t *)s);
          for (size_t i = 0; i < (r >> 3); i++) {
              store64(h + 8 * i, s[i]);
          }
@@ -1083,7 +1083,7 @@ void KeccakF1600_StatePermute(uint32_t *state){
          m += r - s_inc[25];
          s_inc[25] = 0;
  
-         KeccakF1600_StatePermute((uint32_t *)s_inc);
+         KeccakF1600_StatePermute_tightly((uint32_t *)s_inc);
      }
  
      for (i = 0; i < mlen; i++) {
@@ -1142,7 +1142,7 @@ void KeccakF1600_StatePermute(uint32_t *state){
  
      /* Then squeeze the remaining necessary blocks */
      while (outlen > 0) {
-         KeccakF1600_StatePermute((uint32_t *)s_inc);
+         KeccakF1600_StatePermute_tightly((uint32_t *)s_inc);
  
          for (i = 0; i < outlen && i < r; i++) {
              h[i] = (uint8_t)(s_inc[i >> 3] >> (8 * (i & 0x07)));

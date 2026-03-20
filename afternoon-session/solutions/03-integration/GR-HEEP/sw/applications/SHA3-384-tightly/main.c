@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "fips202.h"
+#include "gr_heep.h"
 #include "core_v_mini_mcu.h"
 #include "csr.h"
 

@@ -13,8 +13,6 @@ filesets:
     - x-heep::packages
     - x-heep:ip:pad_control
     - openhwgroup.org:systems:core-v-mini-mcu
-    - edge:ip:keccak_tightly
-    - vlsi:polito:keccak
     files:
     - hw/gr-heep/gr_heep_pkg.sv
     - hw/gr-heep/gr_heep_xbar.sv
@@ -23,6 +21,11 @@ filesets:
     - hw/gr-heep/gr_heep_peripherals.sv
     - hw/gr-heep/gr_heep.sv
     file_type: systemVerilogSource
+
+  keccak_rtl:
+    depend:
+    - edge:ip:keccak_tightly
+    - vlsi:polito:keccak
 
   # Simulation
   files_verilator_waiver:
@@ -191,6 +194,7 @@ targets:
     filesets:
     - files_rtl_generic
     - target_sim? (tool_verilator? (files_verilator_waiver))
+    - keccak_rtl
     toplevel: [gr_heep]
 
   sim:
@@ -246,6 +250,7 @@ targets:
           - "-Wno-UNUSEDSIGNAL"
           - "-Wno-DECLFILENAME"
           - "-Wno-WIDTHTRUNC"
+          - "-Wno-MODDUP"
       modelsim:
         vlog_options:
         - -override_timescale 1ns/1ps
